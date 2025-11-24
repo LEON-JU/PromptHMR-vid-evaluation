@@ -1,19 +1,19 @@
 from dataclasses import dataclass
-# from hydra.core.config_store import ConfigStore
-# from hydra_zen import builds
+from hydra.core.config_store import ConfigStore
+from hydra_zen import builds
 
 import argparse
 from hydra import compose, initialize_config_module
-# import os
+import os
 
-# os.environ["HYDRA_FULL_ERROR"] = "1"
+os.environ["HYDRA_FULL_ERROR"] = "1"
 
-# MainStore = ConfigStore.instance()
+MainStore = ConfigStore.instance()
 
 
-# def register_store_gvhmr():
-#     """Register group options to MainStore"""
-#     from . import store_gvhmr
+def register_store_gvhmr():
+    """Register group options to MainStore"""
+    from . import store_gvhmr
 
 
 def parse_args_to_cfg():

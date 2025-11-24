@@ -465,8 +465,8 @@ def run_spec_calib(images, out_folder=None, loss_type='softargmax_l2', save_res=
     
     CKPT = 'data/pretrain/camcalib_sa_biased_l2.ckpt'
     
-    if os.path.exists('/.dockerenv') or 'AWS_DEFAULT_REGION' in os.environ.keys():
-        CKPT = os.path.abspath(CKPT.replace('data', '/code/data'))
+    # if os.path.exists('/.dockerenv') or 'AWS_DEFAULT_REGION' in os.environ.keys():
+    #     CKPT = os.path.abspath(CKPT.replace('data', '/code/data'))
 
     ckpt = torch.load(CKPT)
         

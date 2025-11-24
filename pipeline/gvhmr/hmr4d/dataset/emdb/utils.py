@@ -97,6 +97,16 @@ EMDB2_LIST = [
     "P9/80_outdoor_walk_big_circle/P9_80_outdoor_walk_big_circle_data.pkl",
 ]
 EMDB2_NAMES = ["_".join(p.split("/")[:2]) for p in EMDB2_LIST]
+
+# Custom subset for user-defined experiments.
+# Edit CUSTOM_EMDB_NAMES to include video ids (e.g., "P0_09_outdoor_walk") that you want to process.
+# When split=3 is selected, only the videos listed here will be evaluated.
+CUSTOM_EMDB_NAMES = [
+    "P0_09_outdoor_walk",
+    "P2/19_indoor_walk_off_mvs/P2_19_indoor_walk_off_mvs_data.pkl",
+    "P2/20_outdoor_walk/P2_20_outdoor_walk_data.pkl"
+]
+
 EMDB_NAMES = list(sorted(set(EMDB1_NAMES + EMDB2_NAMES)))
 
 

@@ -108,36 +108,36 @@ else
 fi
 
 if [ "$PT_VERSION" == "2.4" ]; then
-    conda create -n phmr_pt$PT_VERSION python=3.11.9 -y
+    # conda create -n phmr_pt$PT_VERSION python=3.11.9 -y
     conda activate phmr_pt$PT_VERSION
 
     echo "Installing PyTorch 2.4 and compatible packages..."
-    pip install torch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0 --index-url https://download.pytorch.org/whl/cu121
-    pip install --upgrade setuptools pip
-    pip install torch-scatter -f https://data.pyg.org/whl/torch-2.4.0+cu121.html
-    conda install -c conda-forge suitesparse -y
+    # pip install torch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0 --index-url https://download.pytorch.org/whl/cu121
+    # pip install --upgrade setuptools pip
+    # pip install torch-scatter -f https://data.pyg.org/whl/torch-2.4.0+cu121.html
+    # conda install -c conda-forge suitesparse -y
 
-    pip install -r requirements.txt 
-    mkdir python_libs
-    git clone https://github.com/Arthur151/chumpy python_libs/chumpy
-    python -m pip install -e python_libs/chumpy --no-build-isolation
-    # git clone https://github.com/facebookresearch/pytorch3d.git python_libs/pytorch3d
-    # python -m pip install -e python_libs/pytorch3d --no-build-isolation
+    # pip install -r requirements.txt 
+    # mkdir python_libs
+    # git clone https://github.com/Arthur151/chumpy python_libs/chumpy
+    # python -m pip install -e python_libs/chumpy --no-build-isolation
+    # # git clone https://github.com/facebookresearch/pytorch3d.git python_libs/pytorch3d
+    # # python -m pip install -e python_libs/pytorch3d --no-build-isolation
     
-    pip install -U xformers==0.0.27.post2 --index-url https://download.pytorch.org/whl/cu121 --no-deps
+    # pip install -U xformers==0.0.27.post2 --index-url https://download.pytorch.org/whl/cu121 --no-deps
 
     if [ "$WORLD_VIDEO" == "true" ]; then
-        gdown --folder -O ./data/ https://drive.google.com/drive/folders/1IXyhVqL25ofI-tYqyUZCqF-h4V20795H?usp=sharing
+        # gdown --folder -O ./data/ https://drive.google.com/drive/folders/1IXyhVqL25ofI-tYqyUZCqF-h4V20795H?usp=sharing
 
-        pip install data/wheels/detectron2-0.8-cp311-cp311-linux_x86_64.whl
-        pip install data/wheels/droid_backends_intr-0.3-cp311-cp311-linux_x86_64.whl
-        pip install data/wheels/lietorch-0.3-cp311-cp311-linux_x86_64.whl
-        pip install data/wheels/sam2-1.5-cp311-cp311-linux_x86_64.whl
+        pip install "data/wheels/detectron2-0.8-cp311-cp311-linux_x86_64.whl"
+        pip install "data/wheels/droid_backends_intr-0.3-cp311-cp311-linux_x86_64.whl"
+        pip install "data/wheels/lietorch-0.3-cp311-cp311-linux_x86_64.whl"
+        pip install "data/wheels/sam2-1.5-cp311-cp311-linux_x86_64.whl"
     fi
 
 elif [ "$PT_VERSION" == "2.6" ]; then
     echo "Installing PyTorch 2.6 and compatible packages..."
-    conda create -n phmr_pt$PT_VERSION python=3.12.9 -y
+    # conda create -n phmr_pt$PT_VERSION python=3.12.9 -y
     conda activate phmr_pt$PT_VERSION
 
     pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu126
@@ -157,10 +157,10 @@ elif [ "$PT_VERSION" == "2.6" ]; then
     if [ "$WORLD_VIDEO" == "true" ]; then
         gdown --folder -O ./data/ https://drive.google.com/drive/folders/151gPvMaUWok_pDQT6h8Rpvk_rCcKvcWZ?usp=sharing
 
-        pip install data/wheels/sam2-1.6-cp312-cp312-linux_x86_64.whl
-        pip install data/wheels/detectron2-0.9-cp312-cp312-linux_x86_64.whl
-        pip install data/wheels/droid_backends_intr-0.4-cp312-cp312-linux_x86_64.whl
-        pip install data/wheels/lietorch-0.4-cp312-cp312-linux_x86_64.whl
+        pip install "data/wheels/detectron2-0.8-cp311-cp311-linux_x86_64.whl"
+        pip install "data/wheels/droid_backends_intr-0.3-cp311-cp311-linux_x86_64.whl"
+        pip install "data/wheels/lietorch-0.3-cp311-cp311-linux_x86_64.whl"
+        pip install "data/wheels/sam2-1.5-cp311-cp311-linux_x86_64.whl"
     fi
 fi
 

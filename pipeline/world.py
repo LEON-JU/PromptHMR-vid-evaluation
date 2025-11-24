@@ -41,6 +41,8 @@ def world_hps_estimation(cfg, results, smplx):
 
     locations = []
 
+    smpl_device = next(smplx.parameters()).device
+
     pred_cam = results['camera']
     img_focal = pred_cam['img_focal']
     img_center = pred_cam['img_center']
@@ -75,7 +77,7 @@ def world_hps_estimation(cfg, results, smplx):
 
         pred_smpl = v['smplx_cam']
         for k_, v_ in pred_smpl.items():
-            pred_smpl[k_] = torch.from_numpy(v_)
+            pred_smpl[k_] = torch.from_numpy(v_).float()
         
         pred_rotmat = pred_smpl['rotmat'].clone()
         pred_shape = pred_smpl['shape'].clone()
@@ -88,10 +90,10 @@ def world_hps_estimation(cfg, results, smplx):
         cam_r = Rwc[frame]
         cam_t = Twc[frame]
         smpl_t_pose_pelvis = smplx(
-            global_orient=torch.zeros(1, 3), 
-            body_pose=torch.zeros(1, 21*3), 
-            betas=mean_shape
-        ).joints[0, 0]
+            global_orient=torch.zeros(1, 3, device=smpl_device), 
+            body_pose=torch.zeros(1, 21*3, device=smpl_device), 
+            betas=mean_shape.to(smpl_device)
+        ).joints[0, 0].cpu()
         
         root_orient = pred_rotmat[:, 0]
         root_orient, pred_trans = transform_smpl_params(
@@ -101,21 +103,24 @@ def world_hps_estimation(cfg, results, smplx):
         
         pred_pose_aa = matrix_to_axis_angle(pred_rotmat.reshape(-1, 3, 3)).reshape(-1, 55*3)
         B = pred_pose_aa.shape[0]
+        pose_device = pred_pose_aa.to(smpl_device)
+        pred_shape_device = pred_shape.to(smpl_device)
+        pred_trans_device = pred_trans.to(smpl_device)
         pred = smplx(
-            global_orient=pred_pose_aa[:, :3], 
-            body_pose=pred_pose_aa[:, 3:66],
-            left_hand_pose=pred_pose_aa[:, 75:120],
-            right_hand_pose=pred_pose_aa[:, 120:],
-            betas=pred_shape, 
-            transl=pred_trans,
-            jaw_pose=torch.zeros(B, 3).to(pred_pose_aa),
-            leye_pose=torch.zeros(B, 3).to(pred_pose_aa),
-            reye_pose=torch.zeros(B, 3).to(pred_pose_aa),
-            expression=torch.zeros(B, 10).to(pred_pose_aa),
+            global_orient=pose_device[:, :3], 
+            body_pose=pose_device[:, 3:66],
+            left_hand_pose=pose_device[:, 75:120],
+            right_hand_pose=pose_device[:, 120:],
+            betas=pred_shape_device, 
+            transl=pred_trans_device,
+            jaw_pose=torch.zeros(B, 3, device=smpl_device),
+            leye_pose=torch.zeros(B, 3, device=smpl_device),
+            reye_pose=torch.zeros(B, 3, device=smpl_device),
+            expression=torch.zeros(B, 10, device=smpl_device),
         )
         
-        pred_vert_w = pred.vertices
-        pred_j3d_w = pred.joints[:, :22]
+        pred_vert_w = pred.vertices.detach().cpu()
+        pred_j3d_w = pred.joints[:, :22].detach().cpu()
         
         locations.append(pred_j3d_w[:, 0])
         

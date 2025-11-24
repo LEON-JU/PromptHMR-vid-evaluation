@@ -10,9 +10,9 @@ from hmr4d.utils.pytorch3d_transform import quaternion_to_matrix
 from hmr4d.utils.geo.hmr_cam import estimate_K, resize_K
 from hmr4d.utils.geo.flip_utils import flip_kp2d_coco17
 
-from .utils import EMDB1_NAMES, EMDB2_NAMES
+from .utils import EMDB1_NAMES, EMDB2_NAMES, CUSTOM_EMDB_NAMES
 
-VID_PRESETS = {1: EMDB1_NAMES, 2: EMDB2_NAMES}
+VID_PRESETS = {1: EMDB1_NAMES, 2: EMDB2_NAMES, 3: CUSTOM_EMDB_NAMES}
 
 
 from hmr4d.configs import MainStore, builds
@@ -41,12 +41,33 @@ class EmdbSmplFullSeqDataset(data.Dataset):
             if not img_feats_path.exists():
                 Log.warn(f"[{self.dataset_name}] {img_feats_path} does not exist")
             else:
-                self.labels[k]["features"] = torch.load(img_feats_path)[:, 0]
+                feat_obj = torch.load(img_feats_path, map_location="cpu")
+                if isinstance(feat_obj, dict):
+                    feat_tensor = feat_obj.get("features", None)
+                    if feat_tensor is None:
+                        raise KeyError(f"[{self.dataset_name}] Missing 'features' in {img_feats_path}")
+                else:
+                    feat_tensor = feat_obj
+
+                if isinstance(feat_tensor, (list, tuple)):
+                    feat_tensor = torch.stack([torch.as_tensor(f) for f in feat_tensor])
+                feat_tensor = torch.as_tensor(feat_tensor)
+                if feat_tensor.ndim == 3:
+                    # legacy format (F, tokens, C) -> use CLS token
+                    feat_tensor = feat_tensor[:, 0]
+
+                self.labels[k]["features"] = feat_tensor.float()
                 assert len(self.labels[k]["features"]) == len(self.labels[k]["mask"])
         
         self.cam_traj = torch.load(self.emdb_dir / "emdb_dpvo_traj.pt")  # estimated with DPVO
 
         # Setup dataset index
+        if split not in VID_PRESETS:
+            raise ValueError(f"Unknown EMDB split id: {split}. Supported splits: {list(VID_PRESETS.keys())}")
+        if split == 3 and len(VID_PRESETS[3]) == 0:
+            raise ValueError("Custom EMDB split (split=3) selected but CUSTOM_EMDB_NAMES is empty. "
+                             "Please edit pipeline/gvhmr/hmr4d/dataset/emdb/utils.py.")
+
         self.idx2meta = []
         for vid in VID_PRESETS[split]:
             seq_length = len(self.labels[vid]["mask"])
