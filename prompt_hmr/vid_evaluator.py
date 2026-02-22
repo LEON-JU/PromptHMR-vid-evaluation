@@ -17,7 +17,7 @@ from pipeline.gvhmr.hmr4d.dataset.emdb.emdb_motion_test import EmdbSmplFullSeqDa
 from pipeline.gvhmr.hmr4d.utils.geo_transform import apply_T_on_points
 
 
-REPO_ROOT = Path("/home/juyiang/code/PromptHMR")
+REPO_ROOT = Path(__file__).resolve().parents[3]
 BODY_MODEL_DIR = REPO_ROOT / "pipeline" / "gvhmr" / "hmr4d" / "utils" / "body_model"
 SMPL_J_REG_PATH = BODY_MODEL_DIR / "smpl_neutral_J_regressor.pt"
 SMPLX2SMPL_PATH = BODY_MODEL_DIR / "smplx2smpl_sparse.pt"
